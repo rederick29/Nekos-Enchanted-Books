@@ -87,7 +87,7 @@ public final class EnchantedBookOverrides extends ItemOverrides {
     }
 
     private static ModelResourceLocation modelFromFile(ResourceLocation modelFile) {
-        return ModelResourceLocation.inventory(modelFile.withPath(s -> s.substring("models/".length(), s.length() - ".json".length())));
+        return ModelResourceLocation.standalone(modelFile.withPath(s -> s.substring("models/".length(), s.length() - ".json".length())));
     }
 
     private static final Set<String> TEXTURED_ENCHANTMENTS = new HashSet<>();
@@ -127,6 +127,16 @@ public final class EnchantedBookOverrides extends ItemOverrides {
                 @Override
                 public @Nullable BakedModel bake(ResourceLocation location, ModelState state, Function<Material, TextureAtlasSprite> sprites) {
                     return baker.bake(location, state, sprites);
+                }
+
+                @Override
+                public @Nullable BakedModel bakeUncached(UnbakedModel model, ModelState state, Function<Material, TextureAtlasSprite> sprites) {
+                    return baker.bakeUncached(model, state, sprites);
+                }
+
+                @Override
+                public UnbakedModel getTopLevelModel(ModelResourceLocation location) {
+                    return baker.getTopLevelModel(location);
                 }
 
                 @Override
@@ -257,12 +267,12 @@ public final class EnchantedBookOverrides extends ItemOverrides {
 
             @Override
             public Enchantment next() {
-                return iterator.next().get();
+                return iterator.next().value();
             }
 
             @Override
             public void forEachRemaining(Consumer<? super Enchantment> action) {
-                iterator.forEachRemaining(holder -> action.accept(holder.get()));
+                iterator.forEachRemaining(holder -> action.accept(holder.value()));
             }
         };
     }

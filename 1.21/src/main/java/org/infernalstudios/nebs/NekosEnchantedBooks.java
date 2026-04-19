@@ -5,13 +5,12 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -51,17 +50,15 @@ public class NekosEnchantedBooks {
         return id.startsWith("enchantment.") ? id.substring("enchantment.".length()) : id;
     }
 
-    public NekosEnchantedBooks() {
-        FMLJavaModLoadingContext context = FMLJavaModLoadingContext.get();
-
-        this.setupListeners(context.getModEventBus());
+    public NekosEnchantedBooks(IEventBus modEventBus) {
+        this.setupListeners(modEventBus);
     }
 
     private void setupListeners(IEventBus modBus) {
-        IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+        IEventBus neoforgeBus = NeoForge.EVENT_BUS;
 
         modBus.<ModelEvent.RegisterAdditional>addListener(event -> EnchantedBookOverrides.prepare(event::register));
-        forgeBus.<ClientPlayerNetworkEvent.LoggingIn>addListener(event -> EnchantedBookOverrides.validate(event.getPlayer().registryAccess().registryOrThrow(Registries.ENCHANTMENT)));
+        neoforgeBus.<ClientPlayerNetworkEvent.LoggingIn>addListener(event -> EnchantedBookOverrides.validate(event.getPlayer().registryAccess().registryOrThrow(Registries.ENCHANTMENT)));
         modBus.addListener(this::gatherData);
     }
 
